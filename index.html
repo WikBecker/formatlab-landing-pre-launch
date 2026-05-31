@@ -32,6 +32,13 @@
       padding: 64px 96px 64px 104px;
     }
 
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
     /* ── Logo ── */
     .logo {
       font-weight: 800;
@@ -43,6 +50,27 @@
     }
     .logo span:first-child { color: #3B4540; }
     .logo span:last-child  { color: #438951; }
+
+    /* ── Lang toggle ── */
+    .lang-toggle {
+      display: flex;
+      border-radius: 40px;
+      overflow: hidden;
+      border: 1.5px solid #c0d8c4;
+      margin-top: 6px;
+    }
+    .lang-btn {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: #405449;
+      transition: background 0.15s;
+    }
+    .lang-btn.active { background: #D1E7D2; }
 
     /* ── Content ── */
     .content { display: flex; flex-direction: column; gap: 32px; }
@@ -196,18 +224,24 @@
   <div class="page">
     <div class="left">
 
-      <!-- Logo -->
-      <a class="logo" href="#">
-        <span>Format</span><span>Lab</span>
-      </a>
+      <!-- Header: logo + lang toggle -->
+      <div class="header">
+        <a class="logo" href="#">
+          <span>Format</span><span>Lab</span>
+        </a>
+        <div class="lang-toggle">
+          <button class="lang-btn active" id="btn-nl" onclick="setLang('nl')">NL</button>
+          <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+        </div>
+      </div>
 
       <!-- Content -->
       <div class="content">
-        <span class="badge">Binnenkort beschikbaar</span>
+        <span class="badge" id="t-badge">Binnenkort beschikbaar</span>
 
-        <h1>Jouw AI creatieve sparringpartner voor tv- en streamingformats</h1>
+        <h1 id="t-tagline">Jouw AI creatieve sparringpartner voor tv- en streamingformats</h1>
 
-        <ul class="features">
+        <ul class="features" id="t-features">
           <li>Brainstorm een ruwe gedachte tot een scherp formatidee</li>
           <li>Ontwikkel en verfijn je format met gerichte vragen</li>
           <li>Exporteer direct naar Word-document of pitchdeck</li>
@@ -216,22 +250,13 @@
 
         <!-- Email signup -->
         <div>
-          <p class="form-label">Schrijf je in voor vroege toegang</p>
-          <form
-            id="signup-form"
-            onsubmit="handleSubmit(event)"
-          >
+          <p class="form-label" id="t-form-label">Schrijf je in voor vroege toegang</p>
+          <form id="signup-form" onsubmit="handleSubmit(event)">
             <div class="form-row">
-              <input
-                class="form-input"
-                type="email"
-                name="email"
-                placeholder="jouw@email.nl"
-                required
-              />
-              <button class="form-btn" type="submit">Aanmelden →</button>
+              <input class="form-input" type="email" name="email" id="t-input" placeholder="jouw@email.nl" required />
+              <button class="form-btn" type="submit" id="t-btn">Aanmelden →</button>
             </div>
-            <p class="form-note">Je ontvangt een bericht zodra FormatLab live gaat. Geen spam.</p>
+            <p class="form-note" id="t-note">Je ontvangt een bericht zodra FormatLab live gaat. Geen spam.</p>
           </form>
           <p class="success-msg" id="success-msg">✓ Ingeschreven. We laten het je weten bij de launch.</p>
         </div>
@@ -252,6 +277,58 @@
   </div>
 
   <script>
+    const copy = {
+      nl: {
+        badge: "Binnenkort beschikbaar",
+        tagline: "Jouw AI creatieve sparringpartner voor tv- en streamingformats",
+        features: [
+          "Brainstorm een ruwe gedachte tot een scherp formatidee",
+          "Ontwikkel en verfijn je format met gerichte vragen",
+          "Exporteer direct naar Word-document of pitchdeck",
+          "Verken trends en markt via Trend Spotter en Format World Update"
+        ],
+        formLabel: "Schrijf je in voor vroege toegang",
+        placeholder: "jouw@email.nl",
+        btn: "Aanmelden →",
+        note: "Je ontvangt een bericht zodra FormatLab live gaat. Geen spam.",
+        success: "✓ Ingeschreven. We laten het je weten bij de launch."
+      },
+      en: {
+        badge: "Coming soon",
+        tagline: "Your AI creative sparring partner for TV & streaming formats",
+        features: [
+          "Brainstorm a rough idea into a sharp format concept",
+          "Develop and refine your format with targeted questions",
+          "Export directly to Word document or pitch deck",
+          "Explore trends and market via Trend Spotter and Format World Update"
+        ],
+        formLabel: "Sign up for early access",
+        placeholder: "your@email.com",
+        btn: "Sign up →",
+        note: "You'll receive a message when FormatLab launches. No spam.",
+        success: "✓ Signed up. We'll let you know at launch."
+      }
+    };
+
+    let lang = 'nl';
+
+    function setLang(l) {
+      lang = l;
+      const t = copy[l];
+      document.getElementById('t-badge').textContent = t.badge;
+      document.getElementById('t-tagline').textContent = t.tagline;
+      const ul = document.getElementById('t-features');
+      ul.innerHTML = t.features.map(f => `<li>${f}</li>`).join('');
+      document.getElementById('t-form-label').textContent = t.formLabel;
+      document.getElementById('t-input').placeholder = t.placeholder;
+      document.getElementById('t-btn').textContent = t.btn;
+      document.getElementById('t-note').textContent = t.note;
+      document.getElementById('success-msg').textContent = t.success;
+      document.getElementById('btn-nl').classList.toggle('active', l === 'nl');
+      document.getElementById('btn-en').classList.toggle('active', l === 'en');
+      document.documentElement.lang = l;
+    }
+
     async function handleSubmit(e) {
       e.preventDefault();
       const form = document.getElementById('signup-form');
@@ -264,7 +341,7 @@
         });
         if (res.ok) {
           form.style.display = 'none';
-          document.querySelector('.form-label').style.display = 'none';
+          document.getElementById('t-form-label').style.display = 'none';
           document.getElementById('success-msg').style.display = 'block';
         }
       } catch (err) {
