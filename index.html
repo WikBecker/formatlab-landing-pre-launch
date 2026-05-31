@@ -219,8 +219,6 @@
           <p class="form-label">Schrijf je in voor vroege toegang</p>
           <form
             id="signup-form"
-            action="https://formspree.io/f/VERVANG_DIT"
-            method="POST"
             onsubmit="handleSubmit(event)"
           >
             <div class="form-row">
@@ -257,12 +255,12 @@
     async function handleSubmit(e) {
       e.preventDefault();
       const form = document.getElementById('signup-form');
-      const data = new FormData(form);
+      const email = form.querySelector('input[type="email"]').value;
       try {
-        const res = await fetch(form.action, {
+        const res = await fetch('https://pitchmate-five.vercel.app/api/waitlist', {
           method: 'POST',
-          body: data,
-          headers: { 'Accept': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
         });
         if (res.ok) {
           form.style.display = 'none';
